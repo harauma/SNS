@@ -8,7 +8,7 @@ services:
     tty: true
     volumes:
     - ./:/app/react
-    command: sh -c "cd /app/react  && yarn start"
+    command: sh -c "cd /app/react/front  && yarn start"
     ports:
       - 3000:3000
   go:
