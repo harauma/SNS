@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-	"github.com/labstack/echo"
+    "fmt"
+    "net/http"
+    "github.com/labstack/echo"
 )
 
 type User struct {
@@ -12,34 +12,34 @@ type User struct {
 }
 
 func main() {
-	e := echo.New()
-	initRouting(e)
+    e := echo.New()
+    initRouting(e)
     e.Logger.Fatal(e.Start(":8000"))
 }
 
 func initRouting(e *echo.Echo) {
-	e.GET("/", echoHello)
-	e.GET("/user", getUser)
-	e.POST("/user", createUser)
+    e.GET("/", echoHello)
+    e.GET("/user", getUser)
+    e.POST("/user", createUser)
 }
 
 func echoHello(c echo.Context) error {
-	fmt.Println("echoHelloが呼ばれました！")
-	return c.String(http.StatusOK, "Hello motio")
+    fmt.Println("echoHelloが呼ばれました！")
+    return c.String(http.StatusOK, "Hello motio")
 }
 
 func getUser(c echo.Context) error {
-	fmt.Println("getUserが呼ばれました！")
-	name := c.QueryParam("name")
+    fmt.Println("getUserが呼ばれました！")
+    name := c.QueryParam("name")
     age := c.QueryParam("age")
     return c.String(http.StatusOK, "name:" + name + ", age:" + age)
 }
 
 func createUser(c echo.Context) error {
-	fmt.Println("createUserが呼ばれました！")
-	u := new(User)
-	if err := c.Bind(u); err != nil {
-        return err
+    fmt.Println("createUserが呼ばれました！")
+    u := new(User)
+    if err := c.Bind(u); err != nil {
+       return err
     }
     return c.JSON(http.StatusOK, u)
 }
