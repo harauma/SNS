@@ -20,7 +20,7 @@ func main() {
 func initRouting(e *echo.Echo) {
     e.GET("/", echoHello)
     e.GET("/users", getUsers)
-	e.GET("/user/:userId", getUser)
+    e.GET("/user/:userId", getUser)
     e.POST("/user", createUser)
 }
 
