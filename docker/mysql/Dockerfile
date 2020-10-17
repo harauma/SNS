@@ -1,2 +1,2 @@
-FROM mysql:8.0.16
+FROM mysql:latest
 
