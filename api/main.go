@@ -43,8 +43,8 @@ func initRouting(e *echo.Echo) {
     e.GET("/users", getUsers)
     e.GET("/user/:userId", getUser)
     e.POST("/user", createUser)
-    e.PUT("/user", updateUser)
-    e.DELETE("/user", deleteUser)
+    // e.PUT("/user", updateUser)
+    e.DELETE("/user/:userId", deleteUser)
 }
 
 //DB接続
@@ -112,20 +112,25 @@ func createUser(c echo.Context) error {
 }
 
 //user削除
-// func deleteUser(c echo.Context) error {
-//     fmt.Println("createUserが呼ばれました！")
-//     db := connectGorm()
-//     db.SingularTable(true)
-//     defer db.Close()
+func deleteUser(c echo.Context) error {
+    fmt.Println("createUserが呼ばれました！")
+    db := connectGorm()
+    db.SingularTable(true)
+    defer db.Close()
 
-//     u := new(User)
-//     if err := c.Bind(u); err != nil {
-//         return err
-//     }
-//     db.Create(&u)
+    userId := c.Param("userId")
+    u := new(User)
+    if err := c.Bind(u); err != nil {
+        return err
+    }
 
-//     return c.JSON(http.StatusOK, u)
-// }
+    if err := db.Where("id = ?", userId).Delete(&u).Error; err != nil {
+        fmt.Println(err)
+        return (c.JSON(http.StatusNotFound, nil))
+    }
+
+    return c.String(http.StatusNoContent, "id : " + userId + " deleted")
+}
 
 //userテーブルの全件検索
 func findAll(db *gorm.DB) []User {
