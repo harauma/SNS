@@ -2,7 +2,7 @@ USE test_db;
 DROP TABLE IF EXISTS user;
 CREATE TABLE user
 (
-  id           INT(10),
+  id           INT(10) primary key,
   name     VARCHAR(40)
 );
 INSERT INTO user (id, name) VALUES (1, "Nagaoka");

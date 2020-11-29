@@ -25,6 +25,7 @@ const (
     DBName = "test_db"
 )
 
+//DBのuserテーブルの構造に合わせる
 type User struct {
     Id string `json:"id"`
     Name  string `json:"name"`
@@ -36,13 +37,17 @@ func main() {
     e.Logger.Fatal(e.Start(":8000"))
 }
 
+//ルーティングの作成
 func initRouting(e *echo.Echo) {
     e.GET("/", echoHello)
     e.GET("/users", getUsers)
     e.GET("/user/:userId", getUser)
     e.POST("/user", createUser)
+    e.PUT("/user", updateUser)
+    e.DELETE("/user", deleteUser)
 }
 
+//DB接続
 func connectGorm() *gorm.DB {
     connectTemplate := "%s:%s@%s/%s"
     connect := fmt.Sprintf(connectTemplate, DBUser, DBPass, DBProtocol, DBName)
@@ -77,23 +82,61 @@ func getUsers(c echo.Context) error {
     return c.JSON(http.StatusOK, result)
 }
 
+func getUser(c echo.Context) error {
+    fmt.Println("getUserが呼ばれました！")
+    db := connectGorm()
+    db.SingularTable(true)
+    defer db.Close()
+
+    userId := c.Param("userId")
+    result := findUser(db, userId)
+
+    // return c.String(http.StatusOK, "userId:" + userId)
+    return c.JSON(http.StatusOK, result)
+}
+
+//user新規作成
+func createUser(c echo.Context) error {
+    fmt.Println("createUserが呼ばれました！")
+    db := connectGorm()
+    db.SingularTable(true)
+    defer db.Close()
+
+    u := new(User)
+    if err := c.Bind(u); err != nil {
+        return err
+    }
+    db.Create(&u)
+
+    return c.JSON(http.StatusOK, u)
+}
+
+//user削除
+// func deleteUser(c echo.Context) error {
+//     fmt.Println("createUserが呼ばれました！")
+//     db := connectGorm()
+//     db.SingularTable(true)
+//     defer db.Close()
+
+//     u := new(User)
+//     if err := c.Bind(u); err != nil {
+//         return err
+//     }
+//     db.Create(&u)
+
+//     return c.JSON(http.StatusOK, u)
+// }
+
+//userテーブルの全件検索
 func findAll(db *gorm.DB) []User {
     var allUsers []User
     db.Find(&allUsers)
     return allUsers
 }
 
-func getUser(c echo.Context) error {
-    fmt.Println("getUserが呼ばれました！")
-    userId := c.Param("userId")
-    return c.String(http.StatusOK, "userId:" + userId)
-}
-
-func createUser(c echo.Context) error {
-    fmt.Println("createUserが呼ばれました！")
-    u := new(User)
-    if err := c.Bind(u); err != nil {
-       return err
-    }
-    return c.JSON(http.StatusOK, u)
+//userテーブルからidを指定して検索
+func findUser(db *gorm.DB, id string) User {
+    var user User
+    db.Where("Id = ?",id).Find(&user)
+    return user
 }
