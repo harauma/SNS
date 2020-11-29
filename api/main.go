@@ -43,7 +43,7 @@ func initRouting(e *echo.Echo) {
     e.GET("/users", getUsers)
     e.GET("/user/:userId", getUser)
     e.POST("/user", createUser)
-    // e.PUT("/user", updateUser)
+    e.PUT("/user/:userId", updateUser)
     e.DELETE("/user/:userId", deleteUser)
 }
 
@@ -130,6 +130,27 @@ func deleteUser(c echo.Context) error {
     }
 
     return c.String(http.StatusNoContent, "id : " + userId + " deleted")
+}
+
+//user更新
+func updateUser(c echo.Context) error {
+    fmt.Println("createUserが呼ばれました！")
+    db := connectGorm()
+    db.SingularTable(true)
+    defer db.Close()
+
+    updateUser := new(User)
+    if err := c.Bind(updateUser); err != nil {
+        return err
+    }
+
+    if id := c.Param("userId"); id != "" {
+        var user User
+        db.First(&user, id).Update(updateUser)
+        return c.JSON(http.StatusOK, user)
+    } else {
+        return c.JSON(http.StatusNotFound, nil)
+    }
 }
 
 //userテーブルの全件検索
