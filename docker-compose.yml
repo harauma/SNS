@@ -10,8 +10,8 @@ services:
     environment:
     - CHOKIDAR_USEPOLLING=true
     volumes:
-    - ./:/app/react
-    command: sh -c "cd /app/react/front  && yarn start"
+    - ./front:/app/react
+    command: sh -c "cd /app/react  && yarn start"
     ports:
       - 3000:3000
   go:
